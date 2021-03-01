@@ -64,8 +64,8 @@ public class CircularListTest {
     private void testRepeatedAction(final List<Integer> expectedElements, final Function<CircularList, Optional<Integer>> operation) {
         final int repetitions = 5;
         Collections.nCopies(repetitions, expectedElements).stream()
-                .flatMap(List::stream)
-                .forEach(element -> assertOptionalValueEquals(element, operation.apply(this.list)));
+                   .flatMap(List::stream)
+                   .forEach(element -> assertOptionalValueEquals(element, operation.apply(this.list)));
     }
 
     @Test

@@ -60,7 +60,8 @@ public class CircularListImpl implements CircularList {
         Optional<Integer> foundIndex = IntStream.concat(IntStream.range(this.currentPosition, this.size()),
                                                         IntStream.range(0, this.currentPosition))
                                                 .filter(index -> strategy.apply(this.list.get(index)))
-                                                .boxed().findFirst();
+                                                .boxed()
+                                                .findFirst();
         foundIndex.ifPresent(index -> this.currentPosition = getFollowingIndex(index));
         return foundIndex.map(this.list::get);
     }
