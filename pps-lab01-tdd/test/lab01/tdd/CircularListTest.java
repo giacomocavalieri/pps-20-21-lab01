@@ -107,4 +107,10 @@ public class CircularListTest {
         this.list.reset();
         assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next());
     }
+
+    @Test
+    public void testNextWithStrategyWhenNoElementMatches() {
+        addAll(EXAMPLE_ELEMENTS);
+        assertTrue(this.list.next(elem -> false).isEmpty());
+    }
 }
