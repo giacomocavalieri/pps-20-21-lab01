@@ -43,18 +43,18 @@ public class CircularListImpl implements CircularList {
     }
 
     private void advanceCurrentPosition() {
-        tryUpdatingPositionOrReset(position -> position < this.size() - 1, () -> this.currentPosition++);
+        tryUpdatingPosition(position -> position < this.size() - 1, this.currentPosition + 1, 0);
     }
 
     private void decreaseCurrentPosition() {
-        tryUpdatingPositionOrReset(position -> position > 0, () -> this.currentPosition--);
+        tryUpdatingPosition(position -> position > 0, this.currentPosition - 1, this.size() - 1);
     }
 
-    private void tryUpdatingPositionOrReset(Predicate<Integer> updatingCondition, Runnable updateOperation) {
+    private void tryUpdatingPosition(Predicate<Integer> updatingCondition, int newValue, int fallbackValue) {
         if (updatingCondition.test(this.currentPosition)) {
-            updateOperation.run();
+            this.currentPosition = newValue;
         } else {
-            this.reset();
+            this.currentPosition = fallbackValue;
         }
     }
 

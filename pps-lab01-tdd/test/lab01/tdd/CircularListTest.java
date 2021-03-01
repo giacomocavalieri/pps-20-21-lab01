@@ -33,8 +33,21 @@ public class CircularListTest {
         assertOptionalValueEquals(addedElement, this.list.next());
     }
 
+    @Test
+    public void testRepeatedNext() {
+        final List<Integer> elements = List.of(1, 2, 3);
+        testRepeatedAction(elements, elements, CircularList::next);
+    }
+
+    @Test
+    public void testRepeatedPrevious() {
+        final List<Integer> elements = List.of(1, 2, 3);
+        final List<Integer> expectedElements = List.of(1, 3, 2);
+        testRepeatedAction(elements, expectedElements, CircularList::previous);
+    }
+
     private void testRepeatedAction(final List<Integer> elements, final List<Integer> expectedElements,
-                                  final Function<CircularList, Optional<Integer>> operation) {
+                                    final Function<CircularList, Optional<Integer>> operation) {
         final int repetitions = 5;
         elements.forEach(element -> this.list.add(element));
         Collections.nCopies(repetitions, expectedElements).stream()
@@ -43,21 +56,8 @@ public class CircularListTest {
     }
 
     @Test
-    public void testRepeatedNext() {
-        final List<Integer> elements = List.of(1, 2, 3);
-        testRepeatedAction(elements, elements, CircularList::next);
-    }
-
-    @Test
     public void testNextOnEmptyListReturnsEmptyOptional() {
         assertTrue(this.list.next().isEmpty());
-    }
-
-    @Test
-    public void testRepeatedPrevious() {
-        final List<Integer> elements = List.of(1, 2, 3);
-        final List<Integer> expectedElements = List.of(1, 3, 2);
-        testRepeatedAction(elements, expectedElements, CircularList::previous);
     }
 
     private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
