@@ -60,6 +60,11 @@ public class CircularListTest {
         assertTrue(this.list.next().isEmpty());
     }
 
+    @Test
+    public void testPreviousOnEmptyListReturnsEmptyOptional() {
+        assertTrue(this.list.previous().isEmpty());
+    }
+
     private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
