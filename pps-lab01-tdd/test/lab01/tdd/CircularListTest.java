@@ -34,6 +34,13 @@ public class CircularListTest {
     }
 
     @Test
+    public void testSize() {
+        final List<Integer> elements = List.of(1, 2, 3);
+        elements.forEach(element -> this.list.add(element));
+        assertEquals(elements.size(), this.list.size());
+    }
+
+    @Test
     public void testRepeatedNext() {
         final List<Integer> elements = List.of(1, 2, 3);
         testRepeatedAction(elements, elements, CircularList::next);
@@ -64,6 +71,8 @@ public class CircularListTest {
     public void testPreviousOnEmptyListReturnsEmptyOptional() {
         assertTrue(this.list.previous().isEmpty());
     }
+
+
 
     private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
         assertTrue(actual.isPresent());
