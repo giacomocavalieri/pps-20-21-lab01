@@ -1,23 +1,22 @@
 import lab01.example.model.AccountHolder;
 import lab01.example.model.BankAccount;
 import lab01.example.model.SimpleBankAccountWithAtm;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class SimpleBankAccountWithAtmTest extends AbstractSimpleBankAccountTest{
+    private final static double EXPECTED_FEE = 1;
 
-public class SimpleBankAccountWithAtmTest {
-    private AccountHolder accountHolder;
-    private BankAccount bankAccount;
-
-    @BeforeEach
-    public void beforeEach() {
-        this.accountHolder = new AccountHolder("Mario", "Rossi", 1);
-        this.bankAccount = new SimpleBankAccountWithAtm(this.accountHolder, 0);
+    @Override
+    protected BankAccount getTestedBankAccount(AccountHolder accountHolder, double initialBalance) {
+        return new SimpleBankAccountWithAtm(accountHolder, initialBalance);
     }
 
-    @Test
-    public void testInitialBalanceIsZero() {
-        assertEquals(0, this.bankAccount.getBalance());
+    @Override
+    protected double getExpectedBalanceAfterDeposit(double initialBalance, double depositedAmount) {
+        return initialBalance + depositedAmount - EXPECTED_FEE;
+    }
+
+    @Override
+    protected double getExpectedBalanceAfterWithdraw(double initialBalance, double withdrawnAmount) {
+        return initialBalance - withdrawnAmount - EXPECTED_FEE;
     }
 }

@@ -1,22 +1,24 @@
 package lab01.example.model;
 
 public class SimpleBankAccountWithAtm extends AbstractSimpleBankAccount {
+    private static final double TRANSACTION_FEE = 1;
+
     public SimpleBankAccountWithAtm(final AccountHolder accountHolder, final double initialBalance) {
         super(accountHolder, initialBalance);
     }
 
     @Override
     public double getDepositFee() {
-        return 0;
+        return TRANSACTION_FEE;
     }
 
     @Override
     public double getWithdrawalFee() {
-        return 0;
+        return TRANSACTION_FEE;
     }
 
     @Override
     protected boolean isWithdrawAllowed(double amountToWithdraw) {
-        return false;
+        return this.getBalance() >= amountToWithdraw + TRANSACTION_FEE;
     }
 }
