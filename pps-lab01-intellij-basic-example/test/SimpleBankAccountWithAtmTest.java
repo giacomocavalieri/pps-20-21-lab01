@@ -29,8 +29,14 @@ public class SimpleBankAccountWithAtmTest extends AbstractSimpleBankAccountTest{
     public void testMultipleWithdrawals() {
         final int withdrawals = 3;
         final double withdrawnAmount = 30;
-        
+
         IntStream.range(0, withdrawals).forEach(i -> bankAccount.withdraw(accountHolder.getId(), withdrawnAmount));
         assertEquals(INITIAL_BALANCE - (withdrawnAmount + EXPECTED_FEE) * withdrawals, bankAccount.getBalance());
+    }
+
+    @Test
+    public void testWithdrawalFeeDoesNotExceedAccountLimit() {
+        bankAccount.withdraw(accountHolder.getId(), INITIAL_BALANCE);
+        assertEquals(INITIAL_BALANCE, bankAccount.getBalance());
     }
 }
