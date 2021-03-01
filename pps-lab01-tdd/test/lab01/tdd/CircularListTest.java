@@ -44,6 +44,14 @@ public class CircularListTest {
         assertTrue(this.list.next().isEmpty());
     }
 
+    @Test
+    public void testCircularPrevious() {
+        final int tries = 5;
+        final int addedElement = 1;
+        this.list.add(addedElement);
+        IntStream.range(0,tries).forEach(i -> assertOptionalValueEquals(addedElement, this.list.previous()));
+    }
+
     private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
