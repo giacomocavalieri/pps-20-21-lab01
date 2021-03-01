@@ -51,11 +51,7 @@ public class CircularListImpl implements CircularList {
     }
 
     private void tryUpdatingPosition(Predicate<Integer> updatingCondition, int newValue, int fallbackValue) {
-        if (updatingCondition.test(this.currentPosition)) {
-            this.currentPosition = newValue;
-        } else {
-            this.currentPosition = fallbackValue;
-        }
+        this.currentPosition = updatingCondition.test(this.currentPosition) ? newValue : fallbackValue;
     }
 
     @Override
