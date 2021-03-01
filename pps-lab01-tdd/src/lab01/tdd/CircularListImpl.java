@@ -31,7 +31,7 @@ public class CircularListImpl implements CircularList {
     @Override
     public Optional<Integer> next() {
         final Optional<Integer> next = getCurrent();
-        advanceCurrentPosition();
+        increaseCurrentPosition();
         return next;
     }
 
@@ -42,12 +42,20 @@ public class CircularListImpl implements CircularList {
         return previous;
     }
 
-    private void advanceCurrentPosition() {
-        tryUpdatingPosition(position -> position < this.size() - 1, this.currentPosition + 1, 0);
+    private void increaseCurrentPosition() {
+        tryUpdatingPosition(this::canIncrease, this.currentPosition + 1, 0);
+    }
+
+    private boolean canIncrease(final int position) {
+        return position < this.size() - 1;
     }
 
     private void decreaseCurrentPosition() {
-        tryUpdatingPosition(position -> position > 0, this.currentPosition - 1, this.size() - 1);
+        tryUpdatingPosition(this::canDecrease, this.currentPosition - 1, this.size() - 1);
+    }
+
+    private boolean canDecrease(final int position) {
+        return position > 0;
     }
 
     private void tryUpdatingPosition(Predicate<Integer> updatingCondition, int newValue, int fallbackValue) {
