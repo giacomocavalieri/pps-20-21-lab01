@@ -91,4 +91,11 @@ public class CircularListTest {
         assertTrue(this.list.previous().isEmpty());
     }
 
+    @Test
+    public void testResetOnEmptyList() {
+        this.list.reset();
+        assertTrue(this.list.next().isEmpty());
+        assertTrue(this.list.previous().isEmpty());
+    }
+    
 }
