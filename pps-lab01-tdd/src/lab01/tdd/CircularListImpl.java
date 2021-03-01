@@ -1,9 +1,7 @@
 package lab01.tdd;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class CircularListImpl implements CircularList {
     private final List<Integer> list = new ArrayList<>();
@@ -28,22 +26,24 @@ public class CircularListImpl implements CircularList {
         return this.isEmpty() ? Optional.empty() : Optional.of(this.list.get(currentPosition));
     }
 
-    @Override
-    public Optional<Integer> next() {
-        final Optional<Integer> next = getCurrent();
-        this.currentPosition = getFollowingIndex(this.currentPosition);
-        return next;
+    private Optional<Integer> getCurrentAndUpdate(final int newValue) {
+        final Optional<Integer> current = getCurrent();
+        this.currentPosition = newValue;
+        return current;
     }
 
     @Override
-    public Optional<Integer> previous() {
-        final Optional<Integer> previous = getCurrent();
-        this.currentPosition = getPreviousIndex(this.currentPosition);
-        return previous;
+    public Optional<Integer> next() {
+        return getCurrentAndUpdate(getFollowingIndex(this.currentPosition));
     }
 
     private int getFollowingIndex(final int position) {
         return position >= this.size() - 1 ? 0 : position + 1;
+    }
+
+    @Override
+    public Optional<Integer> previous() {
+        return getCurrentAndUpdate(getPreviousIndex(this.currentPosition));
     }
 
     private int getPreviousIndex(final int position) {

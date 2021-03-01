@@ -23,16 +23,16 @@ public class CircularListTest {
         this.list = new CircularListImpl();
     }
 
+    private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
+        assertTrue(actual.isPresent());
+        assertEquals(expected, actual.get());
+    }
+
     @Test
     public void testAdd() {
         final int addedElement = 1;
         this.list.add(addedElement);
         assertOptionalValueEquals(addedElement, this.list.next());
-    }
-
-    private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
     }
 
     private void addAll(Collection<Integer> elements) {
@@ -61,24 +61,24 @@ public class CircularListTest {
         assertFalse(this.list.isEmpty());
     }
 
+    private void testRepeatedAction(final List<Integer> expectedElements, final Function<CircularList, Optional<Integer>> operation) {
+        final int repetitions = 5;
+        Collections.nCopies(repetitions, expectedElements).stream()
+                .flatMap(List::stream)
+                .forEach(element -> assertOptionalValueEquals(element, operation.apply(this.list)));
+    }
+
     @Test
     public void testRepeatedNext() {
-        testRepeatedAction(EXAMPLE_ELEMENTS, EXAMPLE_ELEMENTS, CircularList::next);
+        addAll(EXAMPLE_ELEMENTS);
+        testRepeatedAction(EXAMPLE_ELEMENTS, CircularList::next);
     }
 
     @Test
     public void testRepeatedPrevious() {
         final List<Integer> expectedElements = List.of(1, 3, 2);
-        testRepeatedAction(EXAMPLE_ELEMENTS, expectedElements, CircularList::previous);
-    }
-
-    private void testRepeatedAction(final List<Integer> elements, final List<Integer> expectedElements,
-                                    final Function<CircularList, Optional<Integer>> operation) {
-        final int repetitions = 5;
-        elements.forEach(element -> this.list.add(element));
-        Collections.nCopies(repetitions, expectedElements).stream()
-                .flatMap(List::stream)
-                .forEach(element -> assertOptionalValueEquals(element, operation.apply(this.list)));
+        addAll(EXAMPLE_ELEMENTS);
+        testRepeatedAction(expectedElements, CircularList::previous);
     }
 
     @Test
@@ -125,9 +125,9 @@ public class CircularListTest {
 
     @Test
     public void testNextStrategyWithMultipleMatches() {
+        final List<Integer> expectedElements = List.of(1, 3);
         addAll(EXAMPLE_ELEMENTS);
-        assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next(elem -> elem % 2 != 0));
-        assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(2), this.list.next(elem -> elem % 2 != 0));
+        testRepeatedAction(expectedElements, list -> list.next(elem -> elem % 2 != 0));
         assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next());
     }
 }
