@@ -28,7 +28,7 @@ public class CircularListTest {
     public void testAdd() {
         final int addedElement = 1;
         this.list.add(addedElement);
-        assertOptionalValue(addedElement, this.list.next());
+        assertOptionalValueEquals(addedElement, this.list.next());
     }
 
     @Test
@@ -36,11 +36,17 @@ public class CircularListTest {
         final int tries = 5;
         final int addedElement = 1;
         this.list.add(addedElement);
-        IntStream.range(0, tries).forEach(i -> assertOptionalValue(addedElement, this.list.next()));
+        IntStream.range(0, tries).forEach(i -> assertOptionalValueEquals(addedElement, this.list.next()));
     }
 
-    private static <T> void assertOptionalValue(T expected, Optional<T> actual) {
+    @Test
+    public void testNextOnEmptyListReturnsEmptyOptional() {
+        assertTrue(this.list.next().isEmpty());
+    }
+
+    private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
     }
+
 }
