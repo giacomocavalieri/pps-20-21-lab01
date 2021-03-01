@@ -46,7 +46,7 @@ public class CircularListTest {
     }
 
     @Test
-    public void testSizeOfEmptyListIsZero() {
+    public void testEmptyListHasSizeZero() {
         assertEquals(0, this.list.size());
     }
 
@@ -82,12 +82,12 @@ public class CircularListTest {
     }
 
     @Test
-    public void testNextOnEmptyListReturnsEmptyOptional() {
+    public void testNextEmptyOnEmptyList() {
         assertTrue(this.list.next().isEmpty());
     }
 
     @Test
-    public void testPreviousOnEmptyListReturnsEmptyOptional() {
+    public void testPreviousEmptyOnEmptyList() {
         assertTrue(this.list.previous().isEmpty());
     }
 
@@ -109,29 +109,25 @@ public class CircularListTest {
     }
 
     @Test
-    public void testNextWithStrategyWhenNoElementMatches() {
+    public void testNextStrategyWithNoMatch() {
         addAll(EXAMPLE_ELEMENTS);
         assertTrue(this.list.next(elem -> false).isEmpty());
-    }
-
-    @Test
-    public void testNextWithMatchingElement() {
-        final int expectedMatch = EXAMPLE_ELEMENTS.get(1);
-        addAll(EXAMPLE_ELEMENTS);
-        assertOptionalValueEquals(expectedMatch, this.list.next(elem -> elem == expectedMatch));
-    }
-
-
-    @Test
-    public void testNextWithStrategyUpdatesListStatus() {
-        addAll(EXAMPLE_ELEMENTS);
-        this.list.next(elem -> elem == EXAMPLE_ELEMENTS.get(2));
         assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next());
     }
 
     @Test
-    public void testNextWithStrategyMatchesWithFirstPossibleElement() {
+    public void testNextStrategyWithMatch() {
+        final int expectedMatch = EXAMPLE_ELEMENTS.get(2);
+        addAll(EXAMPLE_ELEMENTS);
+        assertOptionalValueEquals(expectedMatch, this.list.next(elem -> elem == expectedMatch));
+        assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next());
+    }
+
+    @Test
+    public void testNextStrategyWithMultipleMatches() {
         addAll(EXAMPLE_ELEMENTS);
         assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next(elem -> elem % 2 != 0));
+        assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(2), this.list.next(elem -> elem % 2 != 0));
+        assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next());
     }
 }

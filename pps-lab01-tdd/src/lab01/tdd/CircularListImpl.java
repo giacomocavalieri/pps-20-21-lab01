@@ -43,15 +43,11 @@ public class CircularListImpl implements CircularList {
     }
 
     private int getFollowingIndex(final int position) {
-        return isBoundary(position) ? 0 : position + 1;
+        return position >= this.size() - 1 ? 0 : position + 1;
     }
 
     private int getPreviousIndex(final int position) {
-        return isBoundary(position) ? this.size() - 1 : position - 1;
-    }
-
-    private boolean isBoundary(final int position) {
-        return position == 0 || position == this.size() - 1;
+        return position <= 0 ? this.size() - 1 : position - 1;
     }
 
     @Override
