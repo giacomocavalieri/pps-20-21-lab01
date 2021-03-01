@@ -128,4 +128,10 @@ public class CircularListTest {
         this.list.next(elem -> elem == EXAMPLE_ELEMENTS.get(2));
         assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next());
     }
+
+    @Test
+    public void testNextWithStrategyMatchesWithFirstPossibleElement() {
+        addAll(EXAMPLE_ELEMENTS);
+        assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next(elem -> elem % 2 != 0));
+    }
 }
