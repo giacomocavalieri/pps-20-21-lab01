@@ -3,6 +3,7 @@ package lab01.tdd;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class CircularListImpl implements CircularList {
     private final List<Integer> list = new ArrayList<>();
@@ -23,31 +24,43 @@ public class CircularListImpl implements CircularList {
         return this.list.isEmpty();
     }
 
+    private Optional<Integer> getCurrent() {
+        return this.isEmpty() ? Optional.empty() : Optional.of(this.list.get(currentPosition));
+    }
+
     @Override
     public Optional<Integer> next() {
-        final Optional<Integer> next = this.isEmpty() ? Optional.empty() : Optional.of(this.list.get(currentPosition));
+        final Optional<Integer> next = getCurrent();
         advanceCurrentPosition();
         return next;
     }
 
-    private void advanceCurrentPosition() {
-        this.currentPosition = this.currentPosition < this.size() - 1 ? this.currentPosition + 1 : 0;
-    }
-
     @Override
     public Optional<Integer> previous() {
-        final Optional<Integer> previous = this.isEmpty() ? Optional.empty() : Optional.of(this.list.get(currentPosition));
+        final Optional<Integer> previous = getCurrent();
         decreaseCurrentPosition();
         return previous;
     }
 
+    private void advanceCurrentPosition() {
+        tryUpdatingPositionOrReset(position -> position < this.size() - 1, () -> this.currentPosition++);
+    }
+
     private void decreaseCurrentPosition() {
-        this.currentPosition = this.currentPosition > 0 ? this.currentPosition - 1 : this.size() - 1;
+        tryUpdatingPositionOrReset(position -> position > 0, () -> this.currentPosition--);
+    }
+
+    private void tryUpdatingPositionOrReset(Predicate<Integer> updatingCondition, Runnable updateOperation) {
+        if (updatingCondition.test(this.currentPosition)) {
+            updateOperation.run();
+        } else {
+            this.reset();
+        }
     }
 
     @Override
     public void reset() {
-
+        this.currentPosition = 0;
     }
 
     @Override
