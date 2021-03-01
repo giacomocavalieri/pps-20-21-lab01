@@ -6,14 +6,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class AbstractSimpleBankAccountTest {
-    private final static double INITIAL_BALANCE = 100;
-    private final static int HOLDER_ID = 1;
-    private final static int WRONG_HOLDER_ID = HOLDER_ID + 1;
+    protected final static double INITIAL_BALANCE = 100;
+    protected final static int HOLDER_ID = 1;
+    protected final static int WRONG_HOLDER_ID = HOLDER_ID + 1;
     private final static double DEPOSITED_AMOUNT = 100;
     private final static double WITHDRAWN_AMOUNT = 70;
 
-    private AccountHolder accountHolder;
-    private BankAccount bankAccount;
+    protected AccountHolder accountHolder;
+    protected BankAccount bankAccount;
 
     @BeforeEach
     void beforeEach(){
