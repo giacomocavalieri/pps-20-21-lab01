@@ -3,6 +3,7 @@ package lab01.tdd;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * The test suite for testing the CircularList implementation
  */
 public class CircularListTest {
+    private final static List<Integer> EXAMPLE_ELEMENTS = List.of(1, 2, 3);
     private CircularList list;
 
     @BeforeEach
@@ -28,11 +30,19 @@ public class CircularListTest {
         assertOptionalValueEquals(addedElement, this.list.next());
     }
 
+    private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
+        assertTrue(actual.isPresent());
+        assertEquals(expected, actual.get());
+    }
+
+    private void addAll(Collection<Integer> elements) {
+        elements.forEach(element -> this.list.add(element));
+    }
+
     @Test
     public void testSize() {
-        final List<Integer> elements = List.of(1, 2, 3);
-        elements.forEach(element -> this.list.add(element));
-        assertEquals(elements.size(), this.list.size());
+        addAll(EXAMPLE_ELEMENTS);
+        assertEquals(EXAMPLE_ELEMENTS.size(), this.list.size());
     }
 
     @Test
@@ -47,22 +57,19 @@ public class CircularListTest {
 
     @Test
     public void testListWithElementsIsNotEmpty() {
-        final List<Integer> elements = List.of(1, 2, 3);
-        elements.forEach(element -> this.list.add(element));
+        addAll(EXAMPLE_ELEMENTS);
         assertFalse(this.list.isEmpty());
     }
 
     @Test
     public void testRepeatedNext() {
-        final List<Integer> elements = List.of(1, 2, 3);
-        testRepeatedAction(elements, elements, CircularList::next);
+        testRepeatedAction(EXAMPLE_ELEMENTS, EXAMPLE_ELEMENTS, CircularList::next);
     }
 
     @Test
     public void testRepeatedPrevious() {
-        final List<Integer> elements = List.of(1, 2, 3);
         final List<Integer> expectedElements = List.of(1, 3, 2);
-        testRepeatedAction(elements, expectedElements, CircularList::previous);
+        testRepeatedAction(EXAMPLE_ELEMENTS, expectedElements, CircularList::previous);
     }
 
     private void testRepeatedAction(final List<Integer> elements, final List<Integer> expectedElements,
@@ -82,13 +89,6 @@ public class CircularListTest {
     @Test
     public void testPreviousOnEmptyListReturnsEmptyOptional() {
         assertTrue(this.list.previous().isEmpty());
-    }
-
-
-
-    private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
     }
 
 }
