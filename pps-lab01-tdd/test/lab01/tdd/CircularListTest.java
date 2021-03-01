@@ -3,8 +3,10 @@ package lab01.tdd;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,12 +33,19 @@ public class CircularListTest {
         assertOptionalValueEquals(addedElement, this.list.next());
     }
 
+    private void testRepeatedAction(final List<Integer> elements, final List<Integer> expectedElements,
+                                  final Function<CircularList, Optional<Integer>> operation) {
+        final int repetitions = 5;
+        elements.forEach(element -> this.list.add(element));
+        Collections.nCopies(repetitions, expectedElements).stream()
+                .flatMap(List::stream)
+                .forEach(element -> assertOptionalValueEquals(element, operation.apply(this.list)));
+    }
+
     @Test
-    public void testCircularNext() {
-        final int tries = 5;
-        final int addedElement = 1;
-        this.list.add(addedElement);
-        IntStream.range(0, tries).forEach(i -> assertOptionalValueEquals(addedElement, this.list.next()));
+    public void testRepeatedNext() {
+        final List<Integer> elements = List.of(1, 2, 3);
+        testRepeatedAction(elements, elements, CircularList::next);
     }
 
     @Test
@@ -45,11 +54,10 @@ public class CircularListTest {
     }
 
     @Test
-    public void testCircularPrevious() {
-        final int tries = 5;
-        final int addedElement = 1;
-        this.list.add(addedElement);
-        IntStream.range(0,tries).forEach(i -> assertOptionalValueEquals(addedElement, this.list.previous()));
+    public void testRepeatedPrevious() {
+        final List<Integer> elements = List.of(1, 2, 3);
+        final List<Integer> expectedElements = List.of(1, 3, 2);
+        testRepeatedAction(elements, expectedElements, CircularList::previous);
     }
 
     private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
