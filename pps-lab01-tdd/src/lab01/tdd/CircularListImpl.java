@@ -31,7 +31,7 @@ public class CircularListImpl implements CircularList {
     }
 
     private void advanceCurrentPosition() {
-        this.currentPosition = this.currentPosition <= this.size() - 1 ? 0 : this.currentPosition + 1;
+        this.currentPosition = this.currentPosition < this.size() - 1 ? this.currentPosition + 1 : 0;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class CircularListImpl implements CircularList {
     }
 
     private void decreaseCurrentPosition() {
-        this.currentPosition = this.currentPosition <= 0 ? this.size() - 1 : this.currentPosition - 1;
+        this.currentPosition = this.currentPosition > 0 ? this.currentPosition - 1 : this.size() - 1;
     }
 
     @Override
