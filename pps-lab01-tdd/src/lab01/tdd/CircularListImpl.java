@@ -15,7 +15,7 @@ public class CircularListImpl implements CircularList {
 
     @Override
     public int size() {
-        return 0;
+        return this.list.size();
     }
 
     @Override
@@ -23,10 +23,14 @@ public class CircularListImpl implements CircularList {
         return this.list.isEmpty();
     }
 
+    private void advanceCurrentPosition() {
+        this.currentPosition = this.currentPosition <= this.size() - 1 ? 0 : this.currentPosition + 1;
+    }
+
     @Override
     public Optional<Integer> next() {
         final Optional<Integer> next = this.isEmpty() ? Optional.empty() : Optional.of(this.list.get(currentPosition));
-        this.currentPosition += 1;
+        advanceCurrentPosition();
         return next;
     }
 

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,12 +25,22 @@ public class CircularListTest {
     }
 
     @Test
-    public void testSimpleAdd() {
+    public void testAdd() {
         final int addedElement = 1;
         this.list.add(addedElement);
-        assertFalse(this.list.isEmpty());
-        final Optional<Integer> next = this.list.next();
-        assertTrue(next.isPresent());
-        assertEquals(addedElement, next.get());
+        assertOptionalValue(addedElement, this.list.next());
+    }
+
+    @Test
+    public void testCircularNext() {
+        final int tries = 5;
+        final int addedElement = 1;
+        this.list.add(addedElement);
+        IntStream.range(0, tries).forEach(i -> assertOptionalValue(addedElement, this.list.next()));
+    }
+
+    private static <T> void assertOptionalValue(T expected, Optional<T> actual) {
+        assertTrue(actual.isPresent());
+        assertEquals(expected, actual.get());
     }
 }
