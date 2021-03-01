@@ -113,4 +113,11 @@ public class CircularListTest {
         addAll(EXAMPLE_ELEMENTS);
         assertTrue(this.list.next(elem -> false).isEmpty());
     }
+
+    @Test
+    public void testNextWithMatchingElement() {
+        final int expectedMatch = EXAMPLE_ELEMENTS.get(1);
+        addAll(EXAMPLE_ELEMENTS);
+        assertOptionalValueEquals(expectedMatch, this.list.next(elem -> elem == expectedMatch));
+    }
 }

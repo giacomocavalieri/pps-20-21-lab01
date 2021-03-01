@@ -1,9 +1,9 @@
 package lab01.tdd;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class CircularListImpl implements CircularList {
     private final List<Integer> list = new ArrayList<>();
@@ -31,35 +31,27 @@ public class CircularListImpl implements CircularList {
     @Override
     public Optional<Integer> next() {
         final Optional<Integer> next = getCurrent();
-        increaseCurrentPosition();
+        this.currentPosition = getFollowingIndex(this.currentPosition);
         return next;
     }
 
     @Override
     public Optional<Integer> previous() {
         final Optional<Integer> previous = getCurrent();
-        decreaseCurrentPosition();
+        this.currentPosition = getPreviousIndex(this.currentPosition);
         return previous;
     }
 
-    private void increaseCurrentPosition() {
-        tryUpdatingPosition(this::canIncrease, this.currentPosition + 1, 0);
+    private int getFollowingIndex(final int position) {
+        return isBoundary(position) ? 0 : position + 1;
     }
 
-    private boolean canIncrease(final int position) {
-        return position < this.size() - 1;
+    private int getPreviousIndex(final int position) {
+        return isBoundary(position) ? this.size() - 1 : position - 1;
     }
 
-    private void decreaseCurrentPosition() {
-        tryUpdatingPosition(this::canDecrease, this.currentPosition - 1, this.size() - 1);
-    }
-
-    private boolean canDecrease(final int position) {
-        return position > 0;
-    }
-
-    private void tryUpdatingPosition(Predicate<Integer> updatingCondition, int newValue, int fallbackValue) {
-        this.currentPosition = updatingCondition.test(this.currentPosition) ? newValue : fallbackValue;
+    private boolean isBoundary(final int position) {
+        return position == 0 || position == this.size() - 1;
     }
 
     @Override
@@ -69,6 +61,11 @@ public class CircularListImpl implements CircularList {
 
     @Override
     public Optional<Integer> next(SelectStrategy strategy) {
-        return Optional.empty();
+        Optional<Integer> foundIndex = IntStream.concat(IntStream.range(this.currentPosition, this.size()),
+                                                        IntStream.range(0, this.currentPosition))
+                                                .filter(index -> strategy.apply(this.list.get(index)))
+                                                .boxed().findFirst();
+        foundIndex.ifPresent(index -> this.currentPosition = getFollowingIndex(index));
+        return foundIndex.map(this.list::get);
     }
 }
