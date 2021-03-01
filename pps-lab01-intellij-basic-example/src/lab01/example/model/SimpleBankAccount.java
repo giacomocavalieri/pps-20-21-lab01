@@ -5,9 +5,7 @@ package lab01.example.model;
  * In particular, a Simple Bank Account allows always the deposit
  * while the withdraw is allowed only if the balance greater or equal the withdrawal amount
  */
-public class SimpleBankAccount extends AbstractSimpleBankAccount {
-    private final static int DEPOSIT_FEE = 0;
-    private final static int WITHDRAWAL_FEE = 0;
+public class SimpleBankAccount extends AbstractBankAccount {
 
     public SimpleBankAccount(final AccountHolder holder, final double balance) {
         super(holder, balance);
@@ -15,12 +13,12 @@ public class SimpleBankAccount extends AbstractSimpleBankAccount {
 
     @Override
     public double getDepositFee() {
-        return DEPOSIT_FEE;
+        return 0;
     }
 
     @Override
     public double getWithdrawalFee() {
-        return WITHDRAWAL_FEE;
+        return 0;
     }
 
     @Override

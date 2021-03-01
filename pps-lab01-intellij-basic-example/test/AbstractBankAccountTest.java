@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public abstract class AbstractSimpleBankAccountTest {
+public abstract class AbstractBankAccountTest {
     protected final static double INITIAL_BALANCE = 100;
     protected final static int HOLDER_ID = 1;
     protected final static int WRONG_HOLDER_ID = HOLDER_ID + 1;

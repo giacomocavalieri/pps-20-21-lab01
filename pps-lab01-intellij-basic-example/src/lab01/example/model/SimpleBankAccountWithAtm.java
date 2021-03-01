@@ -1,6 +1,6 @@
 package lab01.example.model;
 
-public class SimpleBankAccountWithAtm extends AbstractSimpleBankAccount {
+public class SimpleBankAccountWithAtm extends AbstractBankAccount {
     private static final double TRANSACTION_FEE = 1;
 
     public SimpleBankAccountWithAtm(final AccountHolder accountHolder, final double initialBalance) {
