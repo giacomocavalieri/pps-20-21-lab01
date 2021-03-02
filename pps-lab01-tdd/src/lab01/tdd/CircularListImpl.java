@@ -24,43 +24,13 @@ public class CircularListImpl implements CircularList {
 
     @Override
     public Optional<Integer> next() {
-        return next(index -> true);
-    }
-
-    @Override
-    public Optional<Integer> previous() {
-        final Optional<Integer> current = getCurrentIfPresent();
-        updatePosition(getPreviousPosition(this.currentPosition));
-        return current;
-    }
-
-    private Optional<Integer> getCurrentIfPresent() {
-        return this.isEmpty() ? Optional.empty() : Optional.of(this.list.get(currentPosition));
-    }
-
-    private void updatePosition(final int newPosition) {
-        if (!this.isEmpty()) {
-            this.currentPosition = newPosition;
-        }
-    }
-
-    private int getFollowingPosition(final int position) {
-        return position >= this.size() - 1 ? 0 : position + 1;
-    }
-
-    private int getPreviousPosition(final int position) {
-        return position <= 0 ? this.size() - 1 : position - 1;
-    }
-
-    @Override
-    public void reset() {
-        this.currentPosition = 0;
+        return next(element -> true);
     }
 
     @Override
     public Optional<Integer> next(final SelectStrategy strategy) {
         Optional<Integer> foundIndex = firstMatchingIndexFromCurrentPosition(strategy);
-        foundIndex.ifPresent(index -> updatePosition(getFollowingPosition(index)));
+        foundIndex.ifPresent(index -> setCurrentPosition(getFollowingPosition(index)));
         return foundIndex.map(this.list::get);
     }
 
@@ -70,5 +40,33 @@ public class CircularListImpl implements CircularList {
                         .filter(index -> strategy.apply(this.list.get(index)))
                         .boxed()
                         .findFirst();
+    }
+
+    private void setCurrentPosition(final int newPosition) {
+        this.currentPosition = newPosition;
+    }
+
+    private int getFollowingPosition(final int position) {
+        return position >= this.size() - 1 ? 0 : position + 1;
+    }
+
+    @Override
+    public Optional<Integer> previous() {
+        final Optional<Integer> current = getCurrentIfPresent();
+        current.ifPresent(element -> setCurrentPosition(getPreviousPosition(this.currentPosition)));
+        return current;
+    }
+
+    public Optional<Integer> getCurrentIfPresent() {
+        return this.isEmpty() ? Optional.empty() : Optional.of(this.list.get(this.currentPosition));
+    }
+
+    private int getPreviousPosition(final int position) {
+        return position <= 0 ? this.size() - 1 : position - 1;
+    }
+
+    @Override
+    public void reset() {
+        this.currentPosition = 0;
     }
 }
