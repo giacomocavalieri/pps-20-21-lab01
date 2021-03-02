@@ -1,7 +1,6 @@
 package lab01.tdd;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public class CircularListImpl implements CircularList {
