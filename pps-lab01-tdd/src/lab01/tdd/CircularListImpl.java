@@ -8,7 +8,7 @@ public class CircularListImpl implements CircularList {
     private int currentPosition = 0;
 
     @Override
-    public void add(int element) {
+    public void add(final int element) {
         this.list.add(element);
     }
 
@@ -22,31 +22,35 @@ public class CircularListImpl implements CircularList {
         return this.list.isEmpty();
     }
 
-    private Optional<Integer> getCurrent() {
-        return this.isEmpty() ? Optional.empty() : Optional.of(this.list.get(currentPosition));
-    }
-
-    private Optional<Integer> getCurrentAndUpdate(final int newValue) {
+    @Override
+    public Optional<Integer> next() {
         final Optional<Integer> current = getCurrent();
-        this.currentPosition = newValue;
+        updatePosition(getFollowingPosition(this.currentPosition));
         return current;
     }
 
     @Override
-    public Optional<Integer> next() {
-        return getCurrentAndUpdate(getFollowingIndex(this.currentPosition));
+    public Optional<Integer> previous() {
+        final Optional<Integer> current = getCurrent();
+        updatePosition(getPreviousPosition(this.currentPosition));
+        return current;
     }
 
-    private int getFollowingIndex(final int position) {
+    private Optional<Integer> getCurrent() {
+        return this.isEmpty() ? Optional.empty() : Optional.of(this.list.get(currentPosition));
+    }
+
+    private void updatePosition(final int newPosition) {
+        if (!this.isEmpty()) {
+            this.currentPosition = newPosition;
+        }
+    }
+
+    private int getFollowingPosition(final int position) {
         return position >= this.size() - 1 ? 0 : position + 1;
     }
 
-    @Override
-    public Optional<Integer> previous() {
-        return getCurrentAndUpdate(getPreviousIndex(this.currentPosition));
-    }
-
-    private int getPreviousIndex(final int position) {
+    private int getPreviousPosition(final int position) {
         return position <= 0 ? this.size() - 1 : position - 1;
     }
 
@@ -56,13 +60,13 @@ public class CircularListImpl implements CircularList {
     }
 
     @Override
-    public Optional<Integer> next(SelectStrategy strategy) {
+    public Optional<Integer> next(final SelectStrategy strategy) {
         Optional<Integer> foundIndex = IntStream.concat(IntStream.range(this.currentPosition, this.size()),
                                                         IntStream.range(0, this.currentPosition))
                                                 .filter(index -> strategy.apply(this.list.get(index)))
                                                 .boxed()
                                                 .findFirst();
-        foundIndex.ifPresent(index -> this.currentPosition = getFollowingIndex(index));
+        foundIndex.ifPresent(index -> updatePosition(getFollowingPosition(index)));
         return foundIndex.map(this.list::get);
     }
 }
