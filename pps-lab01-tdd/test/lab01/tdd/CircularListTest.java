@@ -23,11 +23,6 @@ public class CircularListTest {
         this.list = new CircularListImpl();
     }
 
-    private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
-    }
-
     @Test
     public void testAdd() {
         final int addedElement = 1;
@@ -35,14 +30,19 @@ public class CircularListTest {
         assertOptionalValueEquals(addedElement, this.list.next());
     }
 
-    private void addAll(Collection<Integer> elements) {
-        elements.forEach(element -> this.list.add(element));
+    private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
+        assertTrue(actual.isPresent());
+        assertEquals(expected, actual.get());
     }
 
     @Test
     public void testSize() {
         addAll(EXAMPLE_ELEMENTS);
         assertEquals(EXAMPLE_ELEMENTS.size(), this.list.size());
+    }
+
+    private void addAll(Collection<Integer> elements) {
+        elements.forEach(element -> this.list.add(element));
     }
 
     @Test
@@ -61,17 +61,17 @@ public class CircularListTest {
         assertFalse(this.list.isEmpty());
     }
 
-    private void testRepeatedAction(final List<Integer> expectedElements, final Function<CircularList, Optional<Integer>> operation) {
-        final int repetitions = 5;
-        Collections.nCopies(repetitions, expectedElements).stream()
-                   .flatMap(List::stream)
-                   .forEach(element -> assertOptionalValueEquals(element, operation.apply(this.list)));
-    }
-
     @Test
     public void testRepeatedNext() {
         addAll(EXAMPLE_ELEMENTS);
         testRepeatedAction(EXAMPLE_ELEMENTS, CircularList::next);
+    }
+
+    private void testRepeatedAction(final List<Integer> expectedElements, final Function<CircularList, Optional<Integer>> operation) {
+        final int repetitions = 5;
+        Collections.nCopies(repetitions, expectedElements).stream()
+                .flatMap(List::stream)
+                .forEach(element -> assertOptionalValueEquals(element, operation.apply(this.list)));
     }
 
     @Test
