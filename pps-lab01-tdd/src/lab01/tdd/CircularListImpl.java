@@ -1,6 +1,7 @@
 package lab01.tdd;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public class CircularListImpl implements CircularList {
@@ -24,19 +25,17 @@ public class CircularListImpl implements CircularList {
 
     @Override
     public Optional<Integer> next() {
-        final Optional<Integer> current = getCurrent();
-        updatePosition(getFollowingPosition(this.currentPosition));
-        return current;
+        return next(index -> true);
     }
 
     @Override
     public Optional<Integer> previous() {
-        final Optional<Integer> current = getCurrent();
+        final Optional<Integer> current = getCurrentIfPresent();
         updatePosition(getPreviousPosition(this.currentPosition));
         return current;
     }
 
-    private Optional<Integer> getCurrent() {
+    private Optional<Integer> getCurrentIfPresent() {
         return this.isEmpty() ? Optional.empty() : Optional.of(this.list.get(currentPosition));
     }
 
@@ -61,12 +60,16 @@ public class CircularListImpl implements CircularList {
 
     @Override
     public Optional<Integer> next(final SelectStrategy strategy) {
-        Optional<Integer> foundIndex = IntStream.concat(IntStream.range(this.currentPosition, this.size()),
-                                                        IntStream.range(0, this.currentPosition))
-                                                .filter(index -> strategy.apply(this.list.get(index)))
-                                                .boxed()
-                                                .findFirst();
+        Optional<Integer> foundIndex = firstMatchingIndexFromCurrentPosition(strategy);
         foundIndex.ifPresent(index -> updatePosition(getFollowingPosition(index)));
         return foundIndex.map(this.list::get);
+    }
+
+    private Optional<Integer> firstMatchingIndexFromCurrentPosition(final SelectStrategy strategy) {
+        return IntStream.concat(IntStream.range(this.currentPosition, this.size()),
+                                IntStream.range(0, this.currentPosition))
+                        .filter(index -> strategy.apply(this.list.get(index)))
+                        .boxed()
+                        .findFirst();
     }
 }
