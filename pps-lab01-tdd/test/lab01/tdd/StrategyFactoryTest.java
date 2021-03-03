@@ -1,8 +1,6 @@
 package lab01.tdd;
 
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
-import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -17,33 +15,43 @@ class StrategyFactoryTest {
     private final static int TEST_LIST_SIZE = 100;
     private final static List<Integer> TEST_LIST = IntStream.range(0, TEST_LIST_SIZE).boxed().collect(Collectors.toList());
 
-    @TestFactory
-    public List<DynamicTest> testStrategies() {
+    @Test
+    public void testEvenStrategy() {
+        testStrategyBehaviour(n -> n % 2 == 0, STRATEGY_FACTORY.evenStrategy());
+    }
+
+    @Test
+    public void testOddStrategy() {
+        testStrategyBehaviour(n -> n % 2 != 0, STRATEGY_FACTORY.oddStrategy());
+    }
+
+    @Test
+    public void testMultipleOfStrategy() {
         final int testedMultiple = 3;
+        testStrategyBehaviour(n -> n % testedMultiple == 0, STRATEGY_FACTORY.multipleOfStrategy(testedMultiple));
+    }
+
+    @Test
+    public void testEqualStrategy() {
         final int testedEqual = TEST_LIST.get(0);
-
-        return List.of(
-            testExpectedBehaviour("testEvenStrategy", n -> n % 2 == 0, STRATEGY_FACTORY.evenStrategy()),
-            testExpectedBehaviour("testOddStrategy", n -> n % 2 != 0, STRATEGY_FACTORY.oddStrategy()),
-            testExpectedBehaviour("testMultipleOfStrategy", n -> n % testedMultiple == 0, STRATEGY_FACTORY.multipleOfStrategy(testedMultiple)),
-            testExpectedBehaviour("testEqualStrategy", n -> n == testedEqual, STRATEGY_FACTORY.equalStrategy(testedEqual)),
-            testExpectedBehaviour("testAllMatchingStrategy", n -> true, STRATEGY_FACTORY.allMatchingStrategy()),
-            testExpectedBehaviour("testNoneMatchingStrategy", n -> false, STRATEGY_FACTORY.noneMatchingStrategy())
-        );
+        testStrategyBehaviour(n -> n == testedEqual, STRATEGY_FACTORY.equalStrategy(testedEqual));
     }
 
-    private DynamicTest testExpectedBehaviour(final String testName, final Predicate<Integer> expectedBehaviour,
-                                              final SelectStrategy testedStrategy) {
-        return DynamicTest.dynamicTest(testName, createTestRunnable(expectedBehaviour, testedStrategy));
+    @Test
+    public void testAllMatchingStrategy() {
+        testStrategyBehaviour(n -> true, STRATEGY_FACTORY.allMatchingStrategy());
     }
 
-    private Executable createTestRunnable(final Predicate<Integer> expectedBehaviour, final SelectStrategy testedStrategy) {
-        return () -> {
-            final Map<Boolean, List<Integer>> correctSplits = splitListWithPredicate(TEST_LIST, expectedBehaviour);
-            final Map<Boolean, List<Integer>> actualSplits = splitListWithPredicate(TEST_LIST, testedStrategy::apply);
-            assertEquals(correctSplits.get(true), actualSplits.get(true));
-            assertEquals(correctSplits.get(false), correctSplits.get(false));
-        };
+    @Test
+    public void testNoneMatchingStrategy() {
+        testStrategyBehaviour(n -> false, STRATEGY_FACTORY.noneMatchingStrategy());
+    }
+
+    private void testStrategyBehaviour(Predicate<Integer> expectedBehaviour, SelectStrategy actualStrategy) {
+        final Map<Boolean, List<Integer>> expectedSplits = splitListWithPredicate(TEST_LIST, expectedBehaviour);
+        final Map<Boolean, List<Integer>> actualSplits = splitListWithPredicate(TEST_LIST, actualStrategy::apply);
+        assertEquals(expectedSplits.get(true), actualSplits.get(true));
+        assertEquals(expectedSplits.get(false), expectedSplits.get(false));
     }
 
     private <T> Map<Boolean, List<T>> splitListWithPredicate(final List<T> list, final Predicate<T> splittingPredicate) {
