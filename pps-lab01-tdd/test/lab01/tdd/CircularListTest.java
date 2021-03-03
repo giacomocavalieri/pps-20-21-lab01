@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class CircularListTest {
     private final static List<Integer> EXAMPLE_ELEMENTS = List.of(1, 2, 3);
+    private final StrategyFactory strategyFactory = new StrategyFactoryImpl();
     private CircularList list;
 
     @BeforeEach
@@ -42,7 +43,7 @@ public class CircularListTest {
     }
 
     private void addAll(final Collection<Integer> elements) {
-        elements.forEach(element -> this.list.add(element));
+        elements.forEach(this.list::add);
     }
 
     @Test
@@ -111,7 +112,7 @@ public class CircularListTest {
     @Test
     public void testNextStrategyWithNoMatch() {
         addAll(EXAMPLE_ELEMENTS);
-        assertTrue(this.list.next(elem -> false).isEmpty());
+        assertTrue(this.list.next(strategyFactory.noneMatchingStrategy()).isEmpty());
         assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next());
     }
 
@@ -119,7 +120,7 @@ public class CircularListTest {
     public void testNextStrategyWithMatch() {
         final int expectedMatch = EXAMPLE_ELEMENTS.get(2);
         addAll(EXAMPLE_ELEMENTS);
-        assertOptionalValueEquals(expectedMatch, this.list.next(elem -> elem == expectedMatch));
+        assertOptionalValueEquals(expectedMatch, this.list.next(strategyFactory.equalStrategy(expectedMatch)));
         assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next());
     }
 
@@ -127,7 +128,7 @@ public class CircularListTest {
     public void testNextStrategyWithMultipleMatches() {
         final List<Integer> expectedElements = List.of(1, 3);
         addAll(EXAMPLE_ELEMENTS);
-        testRepeatedAction(expectedElements, list -> list.next(elem -> elem % 2 != 0));
+        testRepeatedAction(expectedElements, list -> list.next(strategyFactory.oddStrategy()));
         assertOptionalValueEquals(EXAMPLE_ELEMENTS.get(0), this.list.next());
     }
 }
