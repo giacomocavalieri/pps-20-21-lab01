@@ -1,65 +1,30 @@
 package lab01.tdd;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class StrategyFactoryTest {
     private final static StrategyFactory STRATEGY_FACTORY = new StrategyFactoryImpl();
-    private final static int LENGTH_OF_LIST = 30;
-    private final static List<Integer> TEST_LIST = IntStream.range(0, LENGTH_OF_LIST).boxed().collect(Collectors.toList());
-    private final static List<Integer> EVEN_LIST = TEST_LIST.stream().filter(value -> value % 2 == 0).collect(Collectors.toList());
-    private final static List<Integer> ODD_LIST = TEST_LIST.stream().filter(value -> value % 2 != 0).collect(Collectors.toList());
+    private final static int TEST_LIST_SIZE = 50;
+    private final static List<Integer> TEST_LIST = IntStream.range(0, TEST_LIST_SIZE).boxed().collect(Collectors.toList());
 
-    @Test
-    public void testEvenStrategy() {
-        final SelectStrategy evenStrategy = STRATEGY_FACTORY.evenStrategy();
-        testStrategyMatches(evenStrategy, EVEN_LIST);
-        testStrategyDoesNotMatch(evenStrategy, ODD_LIST);
-    }
-
-    @Test
-    public void testOddStrategy() {
-        final SelectStrategy oddStrategy = STRATEGY_FACTORY.oddStrategy();
-        testStrategyDoesNotMatch(oddStrategy, EVEN_LIST);
-        testStrategyMatches(oddStrategy, ODD_LIST);
-    }
-
-    @Test
-    public void testMultipleOfStrategy() {
-        final int multiple = 3;
-        final SelectStrategy multipleOfStrategy = STRATEGY_FACTORY.multipleOfStrategy(multiple);
-        final List<Integer> multiples = TEST_LIST.stream().filter(value -> value % multiple == 0)
-                                                          .collect(Collectors.toList());
-        final List<Integer> nonMultiples = TEST_LIST.stream().filter(value -> !multiples.contains(value))
-                                                             .collect(Collectors.toList());
-        testStrategyMatches(multipleOfStrategy, multiples);
-        testStrategyDoesNotMatch(multipleOfStrategy, nonMultiples);
-    }
-
-    @Test
-    public void testEqualStrategy() {
-        final int expectedMatch = TEST_LIST.get(0);
-        final SelectStrategy equalStrategy = STRATEGY_FACTORY.equalStrategy(expectedMatch);
-        testStrategyMatches(equalStrategy, List.of(expectedMatch));
-        testStrategyDoesNotMatch(equalStrategy, TEST_LIST.stream().skip(1).collect(Collectors.toList()));
-    }
-
-    @Test
-    public void testAllMatchingStrategy() {
-        final SelectStrategy allMatchingStrategy = STRATEGY_FACTORY.allMatchingStrategy();
-        testStrategyMatches(allMatchingStrategy, TEST_LIST);
-    }
-
-    @Test
-    public void testNoneMatchingStrategy() {
-        final SelectStrategy noneMatchingStrategy = STRATEGY_FACTORY.noneMatchingStrategy();
-        testStrategyDoesNotMatch(noneMatchingStrategy, TEST_LIST);
+    @ParameterizedTest(name = "test{0}")
+    @MethodSource("provideStrategies")
+    public void testStrategy(final String strategyName, final SelectStrategy strategy,
+                             final List<Integer> matchingValues, final List<Integer> nonMatchingValues) {
+        testStrategyMatches(strategy, matchingValues);
+        testStrategyDoesNotMatch(strategy, nonMatchingValues);
     }
 
     private void testStrategyMatches(SelectStrategy strategy, Collection<Integer> matchingValues) {
@@ -69,4 +34,25 @@ class StrategyFactoryTest {
     private void testStrategyDoesNotMatch(SelectStrategy strategy, Collection<Integer> nonMatchingValues) {
         assertTrue(nonMatchingValues.stream().noneMatch(strategy::apply));
     }
+
+    private static Stream<Arguments> provideStrategies() {
+        final int testedMultiple = 3;
+        final int testedEqual = TEST_LIST.get(0);
+
+        return Stream.of(
+            createArgumentFromPredicate("EvenStrategy", STRATEGY_FACTORY.evenStrategy(), n -> n % 2 == 0),
+            createArgumentFromPredicate("OddStrategy", STRATEGY_FACTORY.oddStrategy(), n -> n % 2 != 0),
+            createArgumentFromPredicate("MultipleOfStrategy", STRATEGY_FACTORY.multipleOfStrategy(testedMultiple), n -> n % testedMultiple == 0),
+            createArgumentFromPredicate("EqualStrategy", STRATEGY_FACTORY.equalStrategy(testedEqual), n -> n == testedEqual),
+            createArgumentFromPredicate("AllMatchingStrategy", STRATEGY_FACTORY.allMatchingStrategy(), n -> true),
+            createArgumentFromPredicate("NoneMatchingStrategy", STRATEGY_FACTORY.noneMatchingStrategy(), n -> false)
+        );
+    }
+
+    private static Arguments createArgumentFromPredicate(final String testName, final SelectStrategy testedStrategy,
+                                                         final Predicate<Integer> matchingPredicate) {
+        final Map<Boolean, List<Integer>> listSplit = TEST_LIST.stream().collect(Collectors.partitioningBy(matchingPredicate));
+        return Arguments.of(testName, testedStrategy, listSplit.get(true), listSplit.get(false));
+    }
+
 }
