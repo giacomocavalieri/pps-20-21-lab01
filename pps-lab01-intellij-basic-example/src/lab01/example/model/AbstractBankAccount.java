@@ -22,14 +22,14 @@ public abstract class AbstractBankAccount implements BankAccount {
     @Override
     public void deposit(int usrID, double amount) {
         if (checkUser(usrID)) {
-            this.balance = this.balance + (amount - getDepositFee());
+            this.balance = this.balance + amount - getDepositFee();
         }
     }
 
     @Override
     public void withdraw(int usrID, double amount) {
         if (checkUser(usrID) && isWithdrawAllowed(amount)) {
-            this.balance = this.balance - (amount + getWithdrawalFee());
+            this.balance = this.balance - amount - getWithdrawalFee();
         }
     }
 
