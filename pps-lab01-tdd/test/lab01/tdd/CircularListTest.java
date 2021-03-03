@@ -30,7 +30,7 @@ public class CircularListTest {
         assertOptionalValueEquals(addedElement, this.list.next());
     }
 
-    private static <T> void assertOptionalValueEquals(T expected, Optional<T> actual) {
+    private static <T> void assertOptionalValueEquals(final T expected, final Optional<T> actual) {
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
     }
@@ -41,7 +41,7 @@ public class CircularListTest {
         assertEquals(EXAMPLE_ELEMENTS.size(), this.list.size());
     }
 
-    private void addAll(Collection<Integer> elements) {
+    private void addAll(final Collection<Integer> elements) {
         elements.forEach(element -> this.list.add(element));
     }
 
@@ -67,11 +67,11 @@ public class CircularListTest {
         testRepeatedAction(EXAMPLE_ELEMENTS, CircularList::next);
     }
 
-    private void testRepeatedAction(final List<Integer> expectedElements, final Function<CircularList, Optional<Integer>> operation) {
+    private void testRepeatedAction(final List<Integer> expectedElements, final Function<CircularList, Optional<Integer>> action) {
         final int repetitions = 5;
         Collections.nCopies(repetitions, expectedElements).stream()
-                .flatMap(List::stream)
-                .forEach(element -> assertOptionalValueEquals(element, operation.apply(this.list)));
+                   .flatMap(List::stream)
+                   .forEach(element -> assertOptionalValueEquals(element, action.apply(this.list)));
     }
 
     @Test
