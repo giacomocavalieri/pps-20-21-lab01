@@ -1,5 +1,6 @@
 package lab01.tdd;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,40 +12,47 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StrategyFactoryTest {
-    private final static StrategyFactory STRATEGY_FACTORY = new StrategyFactoryImpl();
     private final static int TEST_LIST_SIZE = 100;
-    private final static List<Integer> TEST_LIST = IntStream.range(0, TEST_LIST_SIZE).boxed().collect(Collectors.toList());
+    private final static List<Integer> TEST_LIST = IntStream.range(0, TEST_LIST_SIZE).boxed()
+                                                            .collect(Collectors.toUnmodifiableList());
+
+    private StrategyFactory strategyFactory;
+
+    @BeforeEach
+    public void beforeEach() {
+        this.strategyFactory = new StrategyFactoryImpl();
+    }
 
     @Test
     public void testEvenStrategy() {
-        testStrategyBehaviour(n -> n % 2 == 0, STRATEGY_FACTORY.evenStrategy());
+        testStrategyBehaviour(n -> n % 2 == 0, strategyFactory.evenStrategy());
     }
 
     @Test
     public void testOddStrategy() {
-        testStrategyBehaviour(n -> n % 2 != 0, STRATEGY_FACTORY.oddStrategy());
+        testStrategyBehaviour(n -> n % 2 != 0, strategyFactory.oddStrategy());
     }
 
     @Test
     public void testMultipleOfStrategy() {
         final int testedMultiple = 3;
-        testStrategyBehaviour(n -> n % testedMultiple == 0, STRATEGY_FACTORY.multipleOfStrategy(testedMultiple));
+        testStrategyBehaviour(n -> n % testedMultiple == 0, strategyFactory.multipleOfStrategy(testedMultiple));
     }
 
     @Test
     public void testEqualStrategy() {
         final int testedEqual = TEST_LIST.get(0);
-        testStrategyBehaviour(n -> n == testedEqual, STRATEGY_FACTORY.equalStrategy(testedEqual));
+        testStrategyBehaviour(n -> n == testedEqual, strategyFactory.equalStrategy(testedEqual));
     }
 
     @Test
     public void testAllMatchingStrategy() {
-        testStrategyBehaviour(n -> true, STRATEGY_FACTORY.allMatchingStrategy());
+        testStrategyBehaviour(n -> true, strategyFactory.allMatchingStrategy());
     }
 
     @Test
     public void testNoneMatchingStrategy() {
-        testStrategyBehaviour(n -> false, STRATEGY_FACTORY.noneMatchingStrategy());
+        testStrategyBehaviour(n -> false, strategyFactory.noneMatchingStrategy());
     }
 
     private void testStrategyBehaviour(Predicate<Integer> expectedBehaviour, SelectStrategy actualStrategy) {
